@@ -30,11 +30,16 @@ func (s *GoldService) Handle(req *goldrpc.GoldRequest, rsp *goldrpc.GoldResponse
 	if err != nil {
 		log.Println("fail to get info from cache, ", err)
 	}
+	// build response
+	rsp.Data = make(map[string]interface{})
 
+	useCache := true
 	// if got nothing from cache, then query the db.
 	if u == nil {
+        	useCache = false
 		// db session example
-		dbSession, err := s.DbFactory.NewDataBaseSession("test", "user", "root", "pwd")
+		dbSession, err := s.DbFactory.NewDataBaseSession("test", "user", "tst", "123")
+
 		if err != nil {
 			log.Println("create db session failed, ", err)
 			return err
@@ -55,25 +60,22 @@ func (s *GoldService) Handle(req *goldrpc.GoldRequest, rsp *goldrpc.GoldResponse
 			if err != nil {
 				log.Println("fail to reset cache, ", err)
 			}
+		} else {
+			rsp.Data["err"] = "no data from database, insert one instead."
+			iu := UserModel{
+				Name: "lumin",
+				Sex: "male",
+				Mail: "marlx6590@163.com",
+			}
+			dbSession.Insert(iu)
 		}
 		u = nil
 	}
 
-	// build response
-	rsp.Data = make(map[string]interface{})
 	if u != nil {
 		rsp.Data["userModel"] = u
-		// rpc example
-		greetingService := s.RpcFactory.NewRemoteServiceConsumer("hello-service", 3000)
-		rpcReq := make(map[string]interface{})
-		rpcReq["name"] = userName
-		greetings, err := greetingService.Request(rpcReq)
-		if err != nil {
-			log.Println("fail to invoke rpc service, ", err)
-		}
-		rsp.Data["greetings"] = greetings
+		rsp.Data["useCache"] = useCache
 	}
 
 	return nil
 }
-
