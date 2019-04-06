@@ -23,6 +23,7 @@ type UserModel struct {
 func (s *GoldService) Handle(req *goldrpc.GoldRequest, rsp *goldrpc.GoldResponse) error {
 	// get data from request
 	userName := req.Data["name"].(string)
+	log.Println("userName: " + userName)
 
 	// cache example
 	cacheKey := "prefix_" + userName
@@ -36,7 +37,7 @@ func (s *GoldService) Handle(req *goldrpc.GoldRequest, rsp *goldrpc.GoldResponse
 	useCache := true
 	// if got nothing from cache, then query the db.
 	if u == nil {
-        	useCache = false
+		useCache = false
 		// db session example
 		dbSession, err := s.DbFactory.NewDataBaseSession("test", "user", "tst", "123")
 
@@ -53,7 +54,8 @@ func (s *GoldService) Handle(req *goldrpc.GoldRequest, rsp *goldrpc.GoldResponse
 			log.Println("fail to query db, ", err)
 			return err
 		}
-		if len(qUsers) > 1 {
+		log.Printf("qUsers: %v\n", qUsers)
+		if len(qUsers) > 0 {
 			u = qUsers[0]
 			// reset the cache
 			err = s.CacheClient.Set(cacheKey, u, 300 * 1000)
@@ -62,12 +64,6 @@ func (s *GoldService) Handle(req *goldrpc.GoldRequest, rsp *goldrpc.GoldResponse
 			}
 		} else {
 			rsp.Data["err"] = "no data from database, insert one instead."
-			iu := UserModel{
-				Name: "lumin",
-				Sex: "male",
-				Mail: "marlx6590@163.com",
-			}
-			dbSession.Insert(iu)
 		}
 		u = nil
 	}
