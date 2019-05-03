@@ -19,8 +19,13 @@ type UserModel struct {
 	Mail string `bson:"mail"`
 }
 
+// would be invoked when the service launch at first time.
+func (s *GoldService) OnInit() {
+	// do something here..
+}
+
 // the biz function
-func (s *GoldService) Handle(req *goldrpc.GoldRequest, rsp *goldrpc.GoldResponse) error {
+func (s *GoldService) OnHandle(req *goldrpc.GoldRequest, rsp *goldrpc.GoldResponse) error {
 	// get data from request
 	userName := req.Data["name"].(string)
 	log.Println("userName: " + userName)
@@ -74,4 +79,12 @@ func (s *GoldService) Handle(req *goldrpc.GoldRequest, rsp *goldrpc.GoldResponse
 	}
 
 	return nil
+}
+
+// when an error is throwed, this function would be called
+// if you don't want to break the process, return true
+// otherwise you should return false
+func (s *GoldService) OnError(err error) bool {
+	log.Println(err)
+	return false
 }
