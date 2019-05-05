@@ -16,6 +16,7 @@ func (s *GoldService) OnHandle(req *common.GoldRequest, rsp *common.GoldResponse
 	log.Println("userName: " + userName)
 
 	greeting := "hello, " + userName
+	rsp.Data = make(map[string]interface{})
 	rsp.Data["greeting"] = greeting
 
 	return nil
