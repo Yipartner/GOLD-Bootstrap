@@ -1,8 +1,7 @@
 package gold
 
 import (
-	"github.com/MarkLux/GOLD/serving/rpc/goldrpc"
-	"github.com/MarkLux/GOLD/serving/wrapper/db"
+	"github.com/MarkLux/GOLD/serving/common"
 	"log"
 )
 
@@ -11,7 +10,7 @@ func (s *GoldService) OnInit() {
 }
 
 // the biz function
-func (s *GoldService) OnHandle(req *goldrpc.GoldRequest, rsp *goldrpc.GoldResponse) error {
+func (s *GoldService) OnHandle(req *common.GoldRequest, rsp *common.GoldResponse) error {
 	// get data from request
 	userName := req.Data["name"].(string)
 	log.Println("userName: " + userName)
