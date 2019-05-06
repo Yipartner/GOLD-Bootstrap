@@ -21,6 +21,7 @@ func (s *GoldService) OnHandle(req *common.GoldRequest, rsp *common.GoldResponse
 
 	return nil
 }
+// test
 // on error
 func (s *GoldService) OnError(err error) bool {
 	log.Println("error!", err)
